@@ -11,7 +11,7 @@ output:
     toc_depth: 4
     toc_float: yes
 subtitle: Momentum Strategies in the U.S. Equity Markets
-abstract: "I successfully replicate the findings of Asness, Moskowitz, and Pedersen (2013) that momentum strategies in zero cost, long-short neutral portfolios are profitable. I expand on their work in three ways: First, I find that profits are much higher when momentum portfolios are constructed using only top and bottom decile performers rather than top and bottom half performers. Second, I find that 6-month return signals are much less profitable than 12-month return signals. Finally, I find the returns of momentum portfolios outperform a zero cost portfolio that is long the S&P 500 and short a riskless asset that yields 0.5% per month."
+abstract: "I successfully replicate the findings of Asness, Moskowitz, and Pedersen (2013) that momentum strategies in zero cost, long-short neutral portfolios are profitable. I expand on their work in three ways: First, I find that profits are much higher when momentum portfolios are constructed using only top and bottom decile performers rather than top and bottom half performers. Second, I find that 6-month return signals are much less profitable than 12-month return signals. Finally, I find that the returns of momentum portfolios outperform a zero cost portfolio that is long the S&P 500 and short a riskless asset that yields 0.5% per month."
 ---
 
 
@@ -94,7 +94,7 @@ monthly <- filter(monthly, monthly$year >= 1971)
 monthly <- filter(monthly, date<as.Date("2017-10-01"))
 ```
 
-My empirical methodology follows that of AMP. To construct the portfolio, I examine monthly performance using end of month stock prices and calculate month over month return. The adjusted close on the last day of each month serves as the figure to measure the month over month performance. To evaluate momentum, AMP evaluate the 12-month return of a security, skipping the most recent month. AMP cite that it is common in momentum literature to skip the most recent month prior to portfolio construction to ensure that all available information has been absorbed into the market. I construct my portfolio with each of the prior 12 months of returns present. Consistent with AMP, I use the twelve month return statistic, to generate a “rank” for each stock during each month. Stocks with the best twelve month returns are ranked highest, and stocks with a worse return receive a lower rank, with the worst stock receiving a rank of 1.
+My empirical methodology follows that of AMP. To construct the portfolio, I examine monthly performance using end of month stock prices and calculate month over month return. The adjusted close on the last day of each month serves as the figure to measure the month over month performance. To evaluate momentum, AMP evaluate the 12-month return of a security, skipping the most recent month. AMP cite that it is common in momentum literature to skip the most recent month prior to portfolio construction to ensure that all available information has been absorbed into the market. I construct my portfolio with each of the prior 12 months of returns present. Consistent with AMP, I use the 12-month return statistic, to generate a “rank” for each stock during each month. Stocks with the best 12-month returns are ranked highest, and stocks with a worse return receive a lower rank, with the worst stock receiving a rank of 1.
 
 ```{r echo=FALSE}
 #Calculate a rolling 12 month return for each stock.
@@ -150,9 +150,9 @@ scaled_port$cum_gain <- cumsum(scaled_port$portfolio_val)
 scaled_port$date <- as.Date(paste0(as.character(scaled_port$month),"/15/",as.character(scaled_port$year)), format="%m/%d/%Y")
 ```
 
-I encountered apparent issues with the way momentum is evaluated and implemented in a factor based portfolio as modeled above. The following issues are only matters relative to measuring momentum, and are not entirely unique to this specific model. The first issue concerns evaluating 12-month return and a matter of market crashes such as those which occurred around 2001 and 2008. Stocks which experience a sharp decline in a short period of time, followed by a slow yet steady recovery can display a negative 12-month return. Granted that this is an accurate measure of momentum, a stock which has experienced a sharp drop followed by 11 months of recovery may still receive a rank that results in a short position in the portfolio. I attempt to address this issue in section 6 by evaluating momentum signals based on 6 months of past returns, instead of 12 months.
+I encountered potential issues with the way momentum is evaluated and implemented in a factor based portfolio as modeled above. The following issues are only matters relative to measuring momentum, and are not entirely unique to this specific model. The first matter concerns evaluating 12-month return and a matter of market crashes such as those which occurred around 2001 and 2008. Stocks which experience a sharp decline in a short period of time, followed by a slow yet steady recovery can display a negative 12-month return. Granted that this is an accurate measure of momentum, a stock which has experienced a sharp drop followed by 11 months of recovery may still receive a rank that results in a short position in the portfolio. I address this idea in section 6 by evaluating momentum signals based on 6 months of past returns, instead of 12 months.
 
-The second issue that I encountered with this methodology concerns stocks with positive returns receiving short positions and stocks with negative returns receiving long positions in the portfolio. During long lasting bull markets in which more than half of the stocks present in the data set demonstrate positive 12-month returns, a portion of them will be shorted in the portfolio, which seems counterintuitive when constructing a portfolio based on historical returns. This issue can also be present in bearish market conditions, with stocks that exhibit negative returns receiving a long position in the portfolio. I address this issue in section 6 by constructing and evaluating a portfolio that only includes the top and bottom decile of stocks’ 12-month returns.
+The second issue that I encountered with this methodology concerns stocks with positive returns potentially receiving short positions and stocks with negative returns potentially receiving long positions in the portfolio. The stock returns evaluated in this thesis are measured relative to the returns of other stocks across the same timeline. In the event that more than half of the stocks at any given time exhibit positive returns, those which demonstrate positive returns that are less than the top half of stocks present at the time will still receive a short position in the portfolio. I address this idea in section 6 by constructing and evaluating a portfolio that only includes the top and bottom decile of stocks’ 12-month returns.
 
 
 ###4. Data
@@ -161,7 +161,7 @@ The second issue that I encountered with this methodology concerns stocks with p
 
 I use data from the United States equity markets. This is the largest equity market in the world and there are numerous reliable sources to collect data from. Additionally, large market capitalization equities are highly liquid and require low transaction costs relative to other asset classes. 
 
-The data I use for this thesis is a file titled “Wiki EOD Stock Prices”, available on the online financial and economic data platform, Quandl. The file contains over 15 million individual observations across three thousand stocks, with observations dating as far back as 1962. The file includes ticker symbols, dates, open and close prices, daily high and low prices, trading volumes, expected dividends, stock split ratios, and figures for all of the variables just listed which have been adjusted for stock splits and reverse stock splits. To examine the data efficiently and replicate the model used by AMP, I transform the daily information into end of month data. AMP and other momentum researchers obtain historical data from the [Center for Research in Security Prices (CRSP)](http://www.crsp.com/), which is likely to be a better quality source for the information described above.
+The data I use for this thesis is a file titled “Wiki EOD Stock Prices”, available on the online financial and economic data platform, [Quandl](https://www.quandl.com/databases/WIKIP). The file contains over 15 million individual observations across three thousand stocks, with observations dating as far back as 1962. The file includes ticker symbols, dates, open and close prices, daily high and low prices, trading volumes, expected dividends, stock split ratios, and figures for all of the variables just listed which have been adjusted for stock splits and reverse stock splits. To examine the data efficiently and replicate the model used by AMP, I transform the daily information into end of month data. AMP and other momentum researchers obtain historical data from the [Center for Research in Security Prices (CRSP)](http://www.crsp.com/), which is likely to be a better quality source for the information described above.
 
 ####4.2. Sample of stocks
 
@@ -191,7 +191,7 @@ stargazer(data.frame(select(monthly, "monthly_vol_mil", "return", "ret12")), tit
 
 <br>
 
-The 1-Month Return and 12-Month Return figures reported in Table I reveal mean returns that are noticeably greater than their respective medians. This upward bias is the result of unlimited upside and limited downside. There is no true limit to growth for an individual stock, as exhibited by one stock which reached a return of 1,170% in a single month. A stock’s downside is normally limited to -100%, but in the case of a data set which does not include stocks whose price went all the way to 0, the worst performance belongs to a security which fell -99.1% over the course of twelve months. This restriction produces the observed upward bias for mean stock returns.
+The 1-Month Return and 12-Month Return figures reported in Table I reveal mean returns that are noticeably greater than their respective medians. This upward bias is the result of unlimited upside and limited downside. There is no true limit to growth for an individual stock, as exhibited by one stock which reached a return of 1,170% in a single month. A stock’s downside is normally limited to -100%, but in the case of a data set which does not include stocks whose price went all the way to 0, the worst performance belongs to a security which fell -99.1% over the course of 12 months. This restriction produces the observed upward bias for mean stock returns.
 
 
 ###5. Results
@@ -235,15 +235,6 @@ ggplot(merged_long, aes(x=date)) +
 ```
 
 
-```{r echo=FALSE}
-#ggplot(merged, aes(x=date)) + 
-    #geom_line(aes(y=asness_cum_ret), color="blue") + 
-    #geom_line(aes(y=lang_cum_ret), color="red") +   
-    #labs(title="Figure 2") + 
-    #ylab("Cumulative Return") + xlab("Date") + 
-    #scale_x_date(date_breaks = "6 years", date_labels = "%Y") + labs(subtitle = "Cumulative Returns From Momentum Portfolios") 
-```
-
 ```{r message=FALSE, results='asis', echo=FALSE}
 stargazer(data.frame(select(merged, "ret", "portfolio_val")), title = "Table II", notes = "Descriptive statistics of momentum portfolio returns from January 1972 through September 2017.", covariate.labels = c("AMP", "Langner"), omit = "year", type = "html", median = TRUE)
 ```
@@ -254,7 +245,7 @@ Figure 2 indicates that my portfolio tracks many of the movements observed in AM
 
 ####5.2. Sources of Momentum Returns
 
-I find evidence of correlation between monthly stock return and previous twelve month performance of the stock. Of the 549 months when a portfolio was constructed from January 1972 through September 2017, 499 months revealed positive correlation between stock returns and previous twelve month return. Mean correlation between 1-month return and 12-month return over the sample time period is calculated to be 0.274. Figure 3 displays the correlation observed over 549 months. The fitted red line demonstrates consistent, positive correlation over time, although it appears to mildly decrease over the sample time period. Intuitive with momentum, the periods of negative correlation can be observed during times when the portfolio performs poorly. These periods often coincide with economic recessions and declines among the major U.S. equity indices. The most notable instances occur during the two most recent economic recessions which followed what are commonly referred to as the “Dot-com Bubble” and the “Housing Bubble”. Both of these economic recessions led to losses in both momentum portfolios observed, and brief periods of negative correlation between one month return and the previous 12-month return.
+I find evidence of correlation between monthly stock return and the previous 12-month return of the stock. Of the 549 months when a portfolio was constructed from January 1972 through September 2017, 499 months revealed positive correlation between stock returns and previous 12-month return. Mean correlation between 1-month return and 12-month return over the sample time period is calculated to be 0.274. Figure 3 displays the correlation observed over 549 months. The fitted red line demonstrates consistent, positive correlation over time, although it appears to mildly decrease over the sample time period. Intuitive with momentum, the periods of negative correlation can be observed during times when the portfolio performs poorly. These periods often coincide with economic recessions and declines among the major U.S. equity indices. The most notable instances occur during the two most recent economic recessions which followed what are commonly referred to as the “Dot-com Bubble” and the “Housing Bubble”. Both of these economic recessions led to losses in both momentum portfolios observed, and brief periods of negative correlation between one month return and the previous 12-month return.
 
 ```{r echo=FALSE, fig.width=6.25}
 cor <- monthly %>% group_by(month, year) %>% summarize(correlation=cor(ret12, return))
@@ -321,16 +312,6 @@ ggplot(sp_long, aes(x=date.x)) +
 ```
 
 
-```{r echo=FALSE}
-#ggplot(sp_merge, aes(x=date.x)) + 
-  #geom_line(aes(y=cum_ret_minus_50bps), color="hotpink") + 
-  #geom_line(aes(y=Asness), color="blue") + 
-  #geom_line(aes(y=Langner), color="red") +   
-  #labs(title = "Figure 4", subtitle="Cumulative Returns From Momentum Portfolios Compared to the S&P 500") + 
-  #ylab("Cumulative Return") + xlab("Date") + 
-  #scale_x_date(date_breaks = "6 years", date_labels = "%Y")
-```
-
 The momentum portfolios constructed by AMP and myself outperform this zero cost investment strategy that is long the S&P 500 and short a riskless asset that yields 0.5% per month. One source of outperformance by the momentum portfolios is attributed to the zero cost investment strategy that involves a short position in a riskless asset that yields 0.5% per month, combined with a long position in the S&P 500. It is also noticeable that the gains accumulated by the S&P 500 are significantly less volatile than the momentum strategies implemented by AMP and myself. It is evident in Figure 4 that both momentum portfolios obtain noticeably greater net cumulative returns when compared to this method of portfolio construction over identical time horizons.
 
 
@@ -340,9 +321,9 @@ The interpretation of momentum in financial markets and implementation in a port
 
 ####6.1. Strong Signals
 
-The first alternative momentum strategy that I pursue is straightforward. Instead of including each of the top 500 stocks ranked by monthly trading value, I only include the top and bottom decile of securities with the strongest momentum signals. That is, of the 500 stocks available, I include those which were originally ranked 1-50 (the worst) and 451-500 (the best). By excluding the 400 stocks with weaker signals, the portfolio is only acting upon securities which exhibited very clear and robust gains or losses over the previous twelve months. 
+The first alternative momentum strategy that I pursue is straightforward. Instead of including each of the top 500 stocks ranked by monthly trading value, I only include the top and bottom decile of securities with the strongest momentum signals. That is, of the 500 stocks available, I include those which were originally ranked 1-50 (the worst) and 451-500 (the best). By excluding the 400 stocks with weaker signals, the portfolio is only acting upon securities which exhibited very clear and robust gains or losses over the previous 12 months. 
 
-I begin this method of portfolio construction in 1990 to include a full 12 months of data for each of the 500 stocks present in the portfolio. Each stock receives a new rank based on the 100 stocks that would be present in each portfolio, as described in section 3. Each stock is then given a new weight and a portfolio is constructed each month based on the returns of the previous twelve months. 
+I begin this method of portfolio construction in 1990 to include a full 12 months of data for each of the 500 stocks present in the portfolio. Each stock receives a new rank based on the 100 stocks that would be present in each portfolio, as described in section 3. Each stock is then given a new weight and a portfolio is constructed each month based on the returns of the previous 12 months. 
 
 ```{r echo=FALSE}
 monthly1990 <- select(monthly, ticker, date, month, year, monthly_vol, return, ret12, rank, weight_times_ret)
@@ -420,17 +401,7 @@ ggplot(merged_3_90_long, aes(x=date.x)) +
 ```
 
 
-```{r echo=FALSE}
-#ggplot(merged_3_90, aes(x=date.x)) + 
-  #geom_line(aes(y=cum_gain500), color="red") + 
-  #geom_line(aes(y=cum_gain), color="springgreen4") + 
-  #geom_line(aes(y=aqr_cum_gain), color="blue") + 
-  #labs(title = "Figure 5", subtitle="Cumulative Returns from Momentum Portfolios: Selective Signal Inclusion") + 
-  #ylab("Cumulative Return") + xlab("Date") + 
-  #scale_x_date(date_breaks = "4 years", date_labels = "%Y")
-```
-
-The cumulative returns observed with this method of portfolio construction since 1990 demonstrate a high level of profitability. Figure 5 displays the cumulative gains from this portfolio accumulated since 1990, compared to portfolios held over the same period which follow the original methodology and do not exclude stocks based on the strength of their momentum signals. Table III displays the descriptive statistics of the monthly stock data for the top and bottom decile of securities. Table IV compares the results from the original portfolio modeled after AMP to the new model that includes only the top and bottom decile of stocks.
+The cumulative returns observed with this method of portfolio construction since 1990 demonstrate a high level of profitability. Figure 5 displays the cumulative gains from this portfolio accumulated since 1990, compared to portfolios held over the same period which follow the original methodology and do not exclude stocks based on the strength of their momentum signals. Table III displays the descriptive statistics of the monthly stock data for the top and bottom decile of stocks. Table IV compares the results from the original portfolio modeled after AMP to the new model that includes only the top and bottom decile of stocks.
 
 ```{r message=FALSE, results='asis', echo=FALSE}
 stargazer(data.frame(select(monthly1990, "return", "ret12")), title = "Table III", notes = "Descriptive statistics of individual stock returns that demonstrate the strongest momentum signals from January 1990 through September 2017.",  covariate.labels = c("1-Month Return", "12-Month Return"), type = "html", median = TRUE)
@@ -446,11 +417,11 @@ stargazer(data.frame(select(merged_3_90, "portfolio_val500", "portfolio_val")), 
 
 <br>
 
-The results reported in Table IV and displayed in Figure 5 indicate that a momentum portfolio consisting of the top and bottom deciles of stocks significantly outperforms a portfolio which do not exclude stocks that exhibit weaker signals of momentum. Volatility of the top and bottom decile portfolio also rises significantly. This is intuitive to the notion that portfolios constructed with this method only include the most volatile stocks present in the data. 
+The results reported in Table IV and displayed in Figure 5 indicate that a momentum portfolio consisting of the top and bottom deciles of stocks significantly outperforms a portfolio which does not exclude stocks that exhibit weaker signals of momentum. Volatility of the top and bottom decile portfolio also rises significantly. This is intuitive to the notion that portfolios constructed with this method only include the most volatile stocks present in the data. 
 
 This thesis does not directly address the topic of transaction costs, however it is important to note that the method of portfolio construction described in this section would logically incur lower transaction costs as it only involves trading 100 securities at each point of portfolio construction, opposed to 500. 
 
-I find correlation between 1-month return and 12-month return within this method of portfolio construction which exceeds the correlation found when implementing AMP’s method of portfolio construction. Mean correlation between 1-month return and 12-month return from 1990 through 2017 across all 500 individual stocks is calculated to be 0.271. Mean correlation across the same timeline while only examining the 100 stocks with the strongest signals is calculated to be 0.358. A graph comparing correlations across both strategies is displayed in Figure 6. The correlation following the methods of AMP is shown in black. The correlation following the method of portfolio construction based on the 100 strongest signals is displayed in green.
+I find correlation between 1-month return and 12-month return within this method of portfolio construction which exceeds the correlation found when implementing AMP’s method of portfolio construction. Mean correlation between 1-month return and 12-month return from 1990 through 2017 across all 500 individual stocks is calculated to be 0.271. Mean correlation across the same timeline while only examining the 100 stocks with the strongest signals is calculated to be 0.358. A graph comparing correlations across both strategies is displayed in Figure 6. The correlation across the portfolios I construct from 1990 to 2017 with the original methodology is displayed in black. The correlation following the method of portfolio construction based on the 100 strongest signals is displayed in green.
 
 ```{r echo=FALSE}
 cor_1990 <- monthly1990 %>% group_by(month, year) %>% summarize(Langner100=cor(ret12, return))
@@ -484,18 +455,6 @@ ggplot(merged_cor_long, aes(x=date)) +
   scale_color_manual(labels = c("Langner (Top & Bottom Decile)", "Langner (1990-2017)"), values = c("springgreen4", "black")) + theme_bw()
 ```
 
-
-
-```{r echo=FALSE}
-#ggplot(merged_cor, aes(x=date)) + 
-  #geom_line(aes(y=correlation), color = "springgreen4") + 
-  #geom_hline(yintercept = 0, size = 0.2, color = "gray40") + 
-  #geom_smooth(aes(y=correlation), method = lm, color = "springgreen4") + 
-  #geom_line(aes(y=correlation500), color = "black") + 
-  #geom_smooth(aes(y=correlation500), method = lm, color = "black") + 
-  #labs(title = "Figure 6", subtitle="Correlation Comparison of Momentum Strategies, 1990-2017") + 
-  #ylab("Correlation") + xlab("Date")
-```
 
 ####6.2. Alternative Timeline of Momentum
 
@@ -561,10 +520,6 @@ ggplot(merged_orig_6_long, aes(x=date.x)) +
 ```
 
 
-```{r echo=FALSE}
-#ggplot(merged_orig_6, aes(x=date.x)) + #geom_line(aes(y=cum_gain6), color="purple") + #geom_line(aes(y=Langner), color="red") + #geom_line(aes(y=Asness), color="blue") + #labs(title = "Figure 7", subtitle="Cumulative Returns from Momentum Portfolios: 6-Month vs 12-Month Signals") + #ylab("Cumulative Return") + xlab("Date") + #scale_x_date(date_breaks = "6 years", date_labels = "%Y")
-```
-
 It is evident that a portfolio constructed from 6-month momentum signals underperforms portfolios constructed from 12-month signals. The performance of the portfolio exhibited in Figure 7 demonstrates negative cumulative returns from 1975 until approximately 1999, and proceeds to follow a similar pattern to the portfolios constructed from 12-month momentum signals during the period spanning from 1999 to 2017.  
 
 Reported in Table V are the descriptive statistics of the monthly data used for this method of portfolio construction. It is noteworthy that some of the figures regarding 1-month return changed from the original monthly data set. The new monthly data includes 6 fewer months of observations, as this method of portfolio construction only requires 6 months of historical returns to generate a signal, opposed to 12 months. The previously discussed upward bias remains present within this data. 
@@ -583,7 +538,7 @@ stargazer(data.frame(select(merged_612, "portfolio_val.y", "portfolio_val6")), t
 
 <br>
 
-Based on the negative cumulative returns observed in Figure 7, I expected to find that the correlation between 1-month return and 12-month return would be higher than the correlation between 1-month return and 6-month return, however Figure 8 shows that this is not the case. The mean correlation between 1-month return and 6-month return over the 549 portfolios constructed is 0.394, which far exceeds the mean correlation between 1-month return and 12-month return over the same sample time period, which is 0.274. While average correlation for the 6-month momentum portfolio is high, it is possible that the performance of the portfolio is driven by a few outliers. The timeline of the portfolio's poor performance is concurrent with the time period in which there are fewer stocks included in the portfolio. When the portfolio experienced significant cumulative losses in 1975, there were only 73 stocks used to construct the portfolio, which would allow outliers to have more of an affect on the overall performance of the portfolio. 
+Based on the negative cumulative returns observed in Figure 7, I expected to find that the correlation between 1-month return and 12-month return would be higher than the correlation between 1-month return and 6-month return, however Figure 8 shows that this is not the case. The mean correlation between 1-month return and 6-month return across the 549 portfolios constructed is 0.394, which far exceeds the mean correlation between 1-month return and 12-month return over the same sample time period, which is 0.274. While average correlation for the 6-month momentum portfolio is high, it is possible that the performance of the portfolio is driven by a few outliers. The timeline of the portfolio's poor performance is concurrent with the time period in which there are fewer stocks included in the portfolio. When the portfolio experienced significant cumulative losses in 1975, there were only 73 stocks used to construct the portfolio, which would allow outliers to have more of an affect on the overall performance of the portfolio. 
 
 [Jegadeesh and Titman (2001)](https://www.jstor.org/stable/222579?seq=1#page_scan_tab_contents) evaluate momentum signals with 6 months of returns, however the portfolios are held for 6 months opposed to just 1 month. It is not entirely clear if my data and methods of portfolio construction would allow for greater cumulative gains if the holding period for this type of momentum portfolio was extended to 6 months. 
 
@@ -614,29 +569,17 @@ ggplot(cor_6_merge_long, aes(x=date)) +
 ```
 
 
-
-```{r echo=FALSE}
-#ggplot(cor_6_merge, aes(x=date)) + 
-  #geom_line(aes(y=correlation6), color = "purple") + 
-  #geom_line(aes(y=correlation)) +
-  #geom_hline(yintercept = 0, size = 0.2, color = "gray40") +
-  #geom_smooth(aes(y=correlation6), method = lm, color = "purple")+
-  #geom_smooth(aes(y=correlation), method = lm, color = "black") +
-  #labs(title = "Figure 8", subtitle="Correlation Comparison of Momentum Strategies: 6-Month vs 12-Month Signals") + 
-  #ylab("Correlation") + xlab("Date")
-```
-
 ```{r echo=FALSE}
 #Despite the results of this strategy displayed in Figure 7, Figure 8 reveals that the correlation between monthly return and previous 6-month return is noticeably higher than the correlation between monthly return and previous 12-month return. It is apparent that there are additional factors which have a profound effect on the returns to portfolios constructed from 6-month momentum signals without accounting for additional factors. Although Jegadeesh and Titman (2001) find evidence of momentum generated from 6-month signals while holding portfolios for 6 months, it is unclear if the data and methodology employed in this thesis would yield similar results.
 ```
 
 ###7. Conclusion
 
-I successfully replicated the findings of AMP with different, lower quality data and a different sample of stocks and found consistent evidence of momentum in the United States equity markets from 1972 through 2017. I find that cumulative returns to momentum portfolios outperform zero cost portfolios that are long the S&P 500 and short in a riskless asset that yields 0.5% per month. Additionally, I find that cumulative returns to momentum portfolios constructed from the top and bottom decile of performers are noticeably greater than portfolios constructed from the top and bottom half of performers. Finally, I find that portfolios constructed from 6-month momentum signals are significantly less profitable that the portfolios constructed from 12 month momentum signals. 
+I successfully replicated the findings of AMP with different, lower quality data and a different sample of stocks and found consistent evidence of momentum in the United States equity markets from 1972 through 2017. I find that cumulative returns to momentum portfolios constructed from the top and bottom decile of performers are noticeably greater than portfolios constructed from the top and bottom half of performers. Additionally, I find that portfolios constructed from 6-month momentum signals are significantly less profitable that the portfolios constructed from 12 month momentum signals. Finally, I find that cumulative returns to momentum portfolios outperform zero cost portfolios that are long the S&P 500 and short in a riskless asset that yields 0.5% per month.
 
-An important caveat is that the momentum portfolios constructed in this thesis do not account for transaction costs. The United States equity markets are large and generally liquid, however there are still costs incorporated in the construction of such an active investment strategy. [Korajczyk and Sadka (2004)](http://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.2004.00656.x/abstract) construct long-only momentum portfolios on the basis of asymmetry in the transaction costs and liquidity between long and short positions in a zero cost portfolio. They find that the apparent profitability of equal weighted momentum strategies is lower than originally examined when accounting for the price impact of trading, however long-only portfolios remain quite profitable under the same conditions. [Lesmond, Schill, and Zhou (2003)](https://poseidon01.ssrn.com/delivery.php?ID=621088068104088080112125102117090106004027002004054026093007110065087064027022003017114044097029003027127113093054034075023046103068117107101094110099095090039009045089120068098009015065026101003000072016031029028004003073126089097084069072114&EXT=pdf) examine previously published momentum literature by incorporating trading costs, with the conclusion that the stocks that exhibit the strongest signals of momentum are generally smaller and less liquid, restricting momentum profitability to large, liquid stocks that tend to display weaker momentum signals. [Frazzini, Israel, and Moskowitz (2012)](https://poseidon01.ssrn.com/delivery.php?ID=721006122086126025008124101110104025121057026076017028009004071073074029011117023067003018063048018122018101102004016090104104106042011054015086013005024011065093071037037091077074111008028065026090064068105125077095101001083108119026067127104020087&EXT=pdf) also find robust profits among momentum portfolios constructed with large market capitalization equities when examining the actual transaction costs obtained from one trillion dollars of live trading data. This literature implies that the strategies implemented in this thesis would remain profitable when accounting for transaction costs due to the nature of the large, liquid securities used to construct momentum portfolios.
+An important caveat is that the momentum portfolios constructed in this thesis do not account for transaction costs. The United States equity markets are large and generally liquid, however there are still costs incorporated in the construction of such an active investment strategy. [Korajczyk and Sadka (2004)](http://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.2004.00656.x/abstract) construct long-only momentum portfolios on the basis of asymmetry in the transaction costs and liquidity between long and short positions in a zero cost portfolio. They find that the apparent profitability of equal weighted momentum strategies is lower than originally examined after accounting for the price impact of trading, however long-only portfolios remain quite profitable under the same conditions. [Lesmond, Schill, and Zhou (2003)](https://poseidon01.ssrn.com/delivery.php?ID=621088068104088080112125102117090106004027002004054026093007110065087064027022003017114044097029003027127113093054034075023046103068117107101094110099095090039009045089120068098009015065026101003000072016031029028004003073126089097084069072114&EXT=pdf) expand upon existing momentum literature by introducing trading costs into various portfolios, with the conclusion that the stocks which exhibit the strongest signals of momentum are generally smaller and less liquid, restricting momentum profitability to large, liquid stocks that tend to display weaker momentum signals. [Frazzini, Israel, and Moskowitz (2012)](https://poseidon01.ssrn.com/delivery.php?ID=721006122086126025008124101110104025121057026076017028009004071073074029011117023067003018063048018122018101102004016090104104106042011054015086013005024011065093071037037091077074111008028065026090064068105125077095101001083108119026067127104020087&EXT=pdf) also find robust profits among momentum portfolios constructed with large market capitalization equities when examining the actual transaction costs obtained from one trillion dollars of live trading data. This literature implies that the strategies implemented in this thesis would remain profitable when accounting for transaction costs due to the nature of the large, liquid securities used to construct momentum portfolios.
 
-The literature discussed above examines the costs of portfolio construction from the perspective of an institutional investor such as a mutual fund or hedge fund. I conducted this thesis without access to the tools and resources that are available to professional money managers, which also poses potential problems for implementation. Investing with a company such as a [Charles Schwab](https://www.schwab.com/public/schwab/investing/pricing_services/fees_minimums/) would cost approximately $5 per transaction for a long position, and [short positions](https://www.schwab.com/active-trader/insights/content/9-frequently-asked-questions-about-short-selling) would cost additional money as well as a required margin account for the positions. Charles Schwab requires an initial margin account of $5,000 to even begin the process of short selling. Furthermore, the strategies that I examine through the process of ranking and weighting stocks involves quantities that are not round numbers of shares. These complications suggest that the average retail investor would have difficulty constructing a full momentum portfolio and would likely benefit from simply examining momentum as a risk factor when evaluating securities to be held in a personal portfolio.   
+The literature discussed above examines the costs of portfolio construction from the perspective of an institutional investor such as a mutual fund or hedge fund. I conducted this thesis without access to the tools and resources that are available to professional money managers, which also poses potential problems for implementation. Investing with a company such as a [Charles Schwab](https://www.schwab.com/public/schwab/investing/pricing_services/fees_minimums/) would cost approximately $5 per transaction for a long position, and [short positions](https://www.schwab.com/active-trader/insights/content/9-frequently-asked-questions-about-short-selling) would cost additional money as well as a required margin account for the positions. Charles Schwab requires an initial margin account of $5,000 to even begin the process of short selling. Furthermore, the strategies that I examine through the process of ranking and weighting stocks involves quantities that are not round numbers of shares. These complications suggest that the average retail investor would have difficulty constructing a full momentum portfolio and would likely benefit from examining momentum as a risk factor when evaluating securities to be held in a personal portfolio.   
 
 Evidence of momentum does not directly suggest that it is an appropriate portfolio construction strategy for every investor. [Carhart (1997)](http://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1997.tb03808.x/full) extends the widely used Fama-French Three-Factor Model for asset pricing by incorporating momentum as a risk factor in a model that factors market risk, size, and value. This four-factor model accurately demonstrates that momentum portfolios contain greater risk and therefore provide an opportunity for excess returns to the market. [Cochrane (1999)](http://faculty.chicagobooth.edu/john.cochrane/research/papers/ep3q99_4.pdf) provides a comprehensive discussion of bearing investment risk in relation to existing assets, as well as risk exposure outside of one’s portfolio, such as employment. For example, the poor performance of momentum portfolios during market crashes suggests that it is not an appropriate investment strategy for an individual whose employment depends on the state of the equity markets. Alternatively, an investor with secure employment that is independent of the market is in a better position to accumulate risk that others actively avoid, providing the opportunity for abnormally high returns.
 
