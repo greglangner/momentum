@@ -16,7 +16,7 @@ abstract: "I successfully replicate the findings of Asness, Moskowitz, and Peder
 
 
 
-###1. Introductions
+###1. Introduction
 
 This thesis examines momentum in the U.S. equity markets through the evaluation of historical returns and construction of zero cost, long-short neutral portfolios. The efficient market hypothesis operates under the assumption that asset prices fully reflect all information available. This implies that there are no opportunities to consistently outperform the market on a risk adjusted basis. Thus, past returns should have no predictive power for future performance. Despite this theory, academic literature provides evidence of momentum across various asset classes. By definition, momentum is the empirically observed tendency for rising asset prices to rise further, and falling prices to keep falling ([Jegadeesh and Titman, 2001](https://www.jstor.org/stable/222579?seq=1#page_scan_tab_contents)). My goal is twofold: first, I seek to replicate existing findings using my own data and programs; second, I seek to examine alternative strategies to momentum investing and evaluate the reasons for variations in the performance of momentum portfolios.  
 
